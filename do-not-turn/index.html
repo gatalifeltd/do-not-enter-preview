@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Do Not Turn - playable preview</title>
+<link rel="icon" href="icon.webp">
+<style>
+  :root { --bg: #1d2633; --card: #2a3646; --ink: #f3f5f2; --muted: #a9b4c2; --red: #d2202f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
+  header img { width: 56px; height: 56px; border-radius: 12px; }
+  h1 { font-size: 22px; margin: 0; }
+  p { color: var(--muted); margin: 4px 0 0; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .tabs button { border: 0; border-radius: 10px; padding: 10px 16px; font: inherit; font-weight: 600; cursor: pointer; background: var(--card); color: var(--ink); }
+  .tabs button[aria-pressed="true"] { background: var(--red); }
+  .stage { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .device { background: #000; border-radius: 28px; padding: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+  .device iframe { display: block; border: 0; border-radius: 18px; background: #263240; }
+  .side { flex: 1; min-width: 240px; }
+  .side ul { padding-left: 18px; color: var(--muted); }
+  .side a { color: var(--ink); }
+  @media (max-width: 720px) { .device { padding: 8px; border-radius: 20px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.webp" alt="">
+    <div>
+      <h1>Do Not Turn: It Will Kill You - playable</h1>
+      <p>Preview of the Long, Medium and Short versions (drafts until the publisher's brief; placeholder art until art v2). Store links open Google Play.</p>
+    </div>
+  </header>
+  <div class="tabs" role="group" aria-label="Version">
+    <button data-version="long" aria-pressed="true">Long - 10 rounds, 3 mistakes</button>
+    <button data-version="medium" aria-pressed="false">Medium - 6 rounds, 2 mistakes</button>
+    <button data-version="short" aria-pressed="false">Short - 3 rounds, 1 mistake</button>
+  </div>
+  <div class="tabs" role="group" aria-label="Screen">
+    <button data-size="390x844" aria-pressed="true">Portrait</button>
+    <button data-size="844x390" aria-pressed="false">Landscape</button>
+    <button data-size="600x600" aria-pressed="false">Square</button>
+  </div>
+  <div class="stage">
+    <div class="device"><iframe id="frame" title="Playable" allow="autoplay"></iframe></div>
+    <div class="side">
+      <p><a id="full" href="playable.html?version=long">Open full screen</a> (best on a phone).</p>
+      <ul>
+        <li>The first round waits for a tap: the timer starts on the first tap on an arrow or the brake.</li>
+        <li>Reload the frame (switch tabs) to start over.</li>
+        <li>Network builds are the same game with each network's API.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+<script>
+  var version = 'long', size = '390x844';
+  var frame = document.getElementById('frame'), full = document.getElementById('full');
+  function fit() {
+    var wh = size.split('x').map(Number), maxW = Math.min(window.innerWidth - 56, 900);
+    var k = Math.min(1, maxW / wh[0], (window.innerHeight - 200) / wh[1]);
+    frame.style.width = Math.round(wh[0] * Math.max(k, 0.5)) + 'px';
+    frame.style.height = Math.round(wh[1] * Math.max(k, 0.5)) + 'px';
+  }
+  function load() {
+    frame.src = 'playable.html?version=' + version + '&t=' + Date.now();
+    full.href = 'playable.html?version=' + version;
+    fit();
+  }
+  document.querySelectorAll('[data-version],[data-size]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var group = b.dataset.version ? '[data-version]' : '[data-size]';
+      document.querySelectorAll(group).forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      if (b.dataset.version) version = b.dataset.version; else size = b.dataset.size;
+      load();
+    });
+  });
+  window.addEventListener('resize', fit);
+  load();
+</script>
+</body>
+</html>
